@@ -4,6 +4,8 @@ import requests
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import StringIO
+from io import BytesIO
+
 
 # Función para leer los hashes del archivo txt subido
 def get_hashes(file):
@@ -75,8 +77,9 @@ if uploaded_file is not None:
     if not df.empty:
         @st.cache_data
         def convert_df_to_excel(df):
-            output = StringIO()
-            df.to_excel(output, index=False, engine='openpyxl')
+            output = BytesIO()  # Usamos BytesIO en lugar de StringIO
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                df.to_excel(writer, index=False)
             processed_data = output.getvalue()
             return processed_data
 
